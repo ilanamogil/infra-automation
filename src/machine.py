@@ -6,10 +6,10 @@ class OS(StrEnum):
     CENTOS = "CentOS"
 
 class Machine(BaseModel):
-    name: str = Field(..., min_length=1, max_length=25)
+    name: str = Field(..., min_length=1, max_length=100)
     os: OS
-    cpu: str
-    ram: str
+    cpu: str = Field(..., min_length=1, max_length=20)
+    ram: str = Field(..., min_length=1, max_length=20)
 
 
 def get_user_input():
