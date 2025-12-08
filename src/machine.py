@@ -1,4 +1,5 @@
 from enum import StrEnum
+import json
 from pydantic import BaseModel, Field
 
 class OS(StrEnum):
@@ -12,8 +13,8 @@ class Machine(BaseModel):
     ram: str = Field(..., min_length=1, max_length=20)
 
 
-def get_user_input():
-    machines = []
+def get_user_input() -> list[Machine]:
+    machines:list[Machine] = []
     while True:
         name = input("Enter machine name (or 'done' to finish): ")
         if name.lower() == 'done':
@@ -22,12 +23,10 @@ def get_user_input():
         cpu = input("Enter CPU (e.g., 2vCPU): ")
         ram = input("Enter RAM (e.g., 4GB): ")
         machine = Machine(name=name,os=os,cpu=cpu,ram=ram)
-        # Validate input (to be implemented by the student)
-        # Example: validate_instance_input(instance_data)
-
         machines.append(machine)
     return machines
-    
 
-
-get_user_input()
+def store_machines_into_config_json(file_path: str, machines: list[Machine]):
+    machines_data = [machine.model_dump() for machine in machines]
+    with open(file_path, "w") as f:
+        json.dump(machines_data, f, indent=4)
