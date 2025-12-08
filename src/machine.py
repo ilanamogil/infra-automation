@@ -1,6 +1,10 @@
 from enum import StrEnum
 import json
 from pydantic import BaseModel, Field
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
 
 class OS(StrEnum):
     UBUNTU = "Ubuntu"
@@ -16,14 +20,18 @@ class Machine(BaseModel):
 def get_user_input() -> list[Machine]:
     machines:list[Machine] = []
     while True:
-        name = input("Enter machine name (or 'done' to finish): ")
+        name = input(f"Enter machine number {len(machines) + 1} name (or 'done' to finish): ")
         if name.lower() == 'done':
             break
         os = input("Enter OS (Ubuntu/CentOS): ")
         cpu = input("Enter CPU (e.g., 2vCPU): ")
         ram = input("Enter RAM (e.g., 4GB): ")
-        machine = Machine(name=name,os=os,cpu=cpu,ram=ram)
-        machines.append(machine)
+        try:
+            machine = Machine(name=name,os=os,cpu=cpu,ram=ram)
+            machines.append(machine)
+            logging.info(f"{machine} created successfully")
+        except ValueError as e:
+            logging.error(f"Error: {e}.\nBad input, Rejected")
     return machines
 
 def store_machines_into_config_json(file_path: str, machines: list[Machine]):
